@@ -15,7 +15,7 @@ while True:
         selected_item = qd.get_drawing(selected_category)
         break
     except ValueError:
-        print(f"{selected_category} is not a valid category.")
+        print(f"{selected_category} is not a valid category. Try another one.")
 
 dwg = svgwrite.Drawing(f'{selected_category}_01.svg', profile='tiny')
 
@@ -34,12 +34,13 @@ for image in range(rows_columns):
             x2 = stroke[coordinate + 1][0]
             y2 = stroke[coordinate + 1][1]
             item_drawing.line((x1, y1, x2, y2), fill=(0, 0, 0), width=2)
-            dwg.add(dwg.line((x1 + column_offset, y1 + row_offset), (x2 + column_offset, y2 + row_offset), stroke=svgwrite.rgb(10, 10, 16, '%')))
+            dwg.add(dwg.line((x1 + column_offset, y1 + row_offset),
+                    (x2 + column_offset, y2 + row_offset),
+                        stroke=svgwrite.rgb(10, 10, 16, '%')))
 
     if columns_count < columns - 1:
         columns_count += 1
     else:
         columns_count = 0
         rows_count += 1
-    # duck_image.show()
 dwg.save(f"{selected_category}_01.gif")
