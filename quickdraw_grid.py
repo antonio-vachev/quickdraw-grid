@@ -1,13 +1,9 @@
 from PIL import Image, ImageDraw
 from quickdraw.data import QuickDrawData
 import svgwrite
+import os
 
-rows = int(input("How many rows do you want? "))
-columns = int(input("How many columns do you want? "))
-rows_columns = rows * columns
-rows_count = 0
-columns_count = 0
-
+# Collect user's choice of category (repeat until valid category is selected)
 while True:
     qd = QuickDrawData()
     selected_category = str.lower((input("What is your category of choice? ")))
@@ -17,8 +13,17 @@ while True:
     except ValueError:
         print(f"{selected_category} is not a valid category. Try another one.")
 
+# Collect user's choice of number of columns and rows
+rows = int(input("How many rows do you want? "))
+columns = int(input("How many columns do you want? "))
+rows_columns = rows * columns
+rows_count = 0
+columns_count = 0
+
+# Setup the svg drawing, name and profile
 dwg = svgwrite.Drawing(f'{selected_category}_01.svg', profile='tiny')
 
+# Get the specified number of drawing from QuickDraw's database
 for image in range(rows_columns):
     row_offset = rows_count * 500
     column_offset = columns_count * 500
@@ -27,6 +32,7 @@ for image in range(rows_columns):
     item_image = Image.new("RGB", (255, 255), color=(255, 255, 255))
     item_drawing = ImageDraw.Draw(item_image)
 
+    # Add each stroke of each selected drawing to the combined svg drawing
     for stroke in selected_item.strokes:
         for coordinate in range(len(stroke) - 1):
             x1 = stroke[coordinate][0]
@@ -38,9 +44,15 @@ for image in range(rows_columns):
                     (x2 + column_offset, y2 + row_offset),
                         stroke=svgwrite.rgb(10, 10, 16, '%')))
 
+    # Increase rows / columns count
     if columns_count < columns - 1:
         columns_count += 1
     else:
         columns_count = 0
         rows_count += 1
+
+# Export the completed .svg file
 dwg.save(f"{selected_category}_01.gif")
+
+# Point the user to the .svg file location
+print(f"Your .svg file can be found here: {os.getcwd()}")
